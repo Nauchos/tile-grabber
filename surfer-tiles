@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surfer Tile Match</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #00bcd4;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 15px;
+        }
+        h1 { color: #fff; text-shadow: 2px 2px #007c91; font-size: 26px; margin-bottom: 5px; }
+        .score-container { font-size: 20px; font-weight: bold; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 70px);
+            gap: 10px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .tile {
+            width: 70px;
+            height: 70px;
+            background-color: #fff;
+            border-radius: 10px;
+            font-size: 32px;
+            line-height: 70px;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 4px #007c91;
+        }
+        .tile.hidden { background-color: #ffeb3b; color: #ffeb3b; }
+        .tile.matched { background-color: #4caf50; opacity: 0.7; pointer-events: none; }
+        button {
+            display: block;
+            width: 85%;
+            max-width: 280px;
+            margin: 12px auto;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .btn-reset { background-color: #ff5722; color: white; }
+        .btn-ad { background-color: #ffcc00; color: #000; box-shadow: 0 4px #b28900; }
+    </style>
+</head>
+<body>
+
+    <h1>🏄‍♂️ Surfer Tile Match 🌊</h1>
+    <div class="score-container">Score: <span id="score">0</span> | Matches: <span id="matches">0</span>/4</div>
+
+    <div class="grid" id="game-grid"></div>
+
+    <button class="btn-reset" onclick="resetGame()">🔄 Restart Game</button>
+    <button class="btn-ad" onclick="watchBonusAd()">📺 Watch Ad for +50 Points</button>
+
+    <script>
+        const items = ['🏄‍♂️', '🌊', '🌴', '🦈', '🏄‍♂️', '🌊', '🌴', '🦈'];
+        let cardsChosen = [];
+        let cardsChosenId = [];
+        let cardsWon = [];
+        let score = 0;
+
+        const grid = document.getElementById('game-grid');
+        const scoreEl = document.getElementById('score');
+        const matchesEl = document.getElementById('matches');
+
+        function shuffle(array) {
+            return array.sort(() => 05 - Math.random());
+        }
+
+        function createBoard() {
+            shuffle(items);
+            grid.innerHTML = '';
+            for (let i = 0; i < items.length; i++) {
+                const card = document.createElement('div');
+                card.setAttribute('class', 'tile hidden');
+                card.setAttribute('data-id', i);
+                card.textContent = items[i];
+                card.addEventListener('click', flipCard);
+                grid.appendChild(card);
+            }
+        }
+
+        function flipCard() {
+            let cardId = this.getAttribute('data-id');
+            if (cardsChosenId.length === 1 && cardsChosenId[0] === cardId) return;
+            
+            cardsChosen.push(items[cardId]);
+            cardsChosenId.push(cardId);
+            this.classList.remove('hidden');
+
+            if (cardsChosen.length === 2) {
+                setTimeout(checkForMatch, 500);
+            }
+        }
+
+        function checkForMatch() {
+            const cards = document.querySelectorAll('.tile');
+            const optionOneId = cardsChosenId[0];
+            const optionTwoId = cardsChosenId[1];
+
+            if (cardsChosen[0] === cardsChosen[1]) {
+                cards[optionOneId].setAttribute('class', 'tile matched');
+                cards[optionTwoId].setAttribute('class', 'tile matched');
+                cardsWon.push(cardsChosen);
+                score += 20;
+            } else {
+                cards[optionOneId].setAttribute('class', 'tile hidden');
+                cards[optionTwoId].setAttribute('class', 'tile hidden');
+                score = Math.max(0, score - 5);
+            }
+
+            cardsChosen = [];
+            cardsChosenId = [];
+            scoreEl.textContent = score;
+            matchesEl.textContent = cardsWon.length;
+
+            if (cardsWon.length === items.length / 2) {
+                alert('🌴 Cowabunga! You matched all the beach tiles! 🌴');
+            }
+        }
+
+        function watchBonusAd() {
+            alert("Simulating Ad Playback... (Your Google code will trigger a real video here later!)");
+            score += 50;
+            scoreEl.textContent = score;
+        }
+
+        function resetGame() {
+            cardsWon = [];
+            score = 0;
+            scoreEl.textContent = score;
+            matchesEl.textContent = 0;
+            createBoard();
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
