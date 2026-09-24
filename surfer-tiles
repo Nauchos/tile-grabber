@@ -1,3 +1,51 @@
+const reel1El = document.getElementById('reel1');
+const reel2El = document.getElementById('reel2');
+const reel3El = document.getElementById('reel3');
+const statusEl = document.getElementById('status-msg');
+function spin() {
+if (balance < 10) {
+statusEl.textContent = "Out of money! Watch an ad to refill!";
+return;
+}
+balance -= 10;
+balanceEl.textContent = balance;
+statusEl.textContent = "Spinning...";
+let t = 0;
+let interval = setInterval(() => {
+reel1El.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+reel2El.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+reel3El.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+t++;
+if (t > 10) {
+clearInterval(interval);
+evaluateResults();
+}
+}, 70);
+}
+function evaluateResults() {
+const r1 = reel1El.textContent;
+const r2 = reel2El.textContent;
+const r3 = reel3El.textContent;
+if (r1 === r2 && r2 === r3) {
+balance += 100;
+statusEl.textContent = "🎉 JACKPOT! You won $100! 🎉";
+} else if (r1 === r2 || r2 === r3 || r1 === r3) {
+balance += 20;
+statusEl.textContent = "😃 Small Win! You won $20!";
+} else {
+statusEl.textContent = "❌ Try Again!";
+}
+balanceEl.textContent = balance;
+}
+function watchRewardedAd() {
+alert("Simulating Ad Playback...");
+balance += 100;
+balanceEl.textContent = balance;
+statusEl.textContent = "🎁 Ad watched! +$100 added!";
+}
+</script>
+</body>
+</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
